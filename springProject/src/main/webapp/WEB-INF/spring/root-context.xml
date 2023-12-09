@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- 가장 먼저 읽히는 파일 Root Context 이유는 web.xml에서 이 친구를 호출하기 때문 -->
+	<!-- 
+		* root-context.xml
+		서버 구동과 동시에 web.xml파일을 거쳐서 바로 로딩되는 문서 == preloading
+		=> 서버 구동과 동시에 바로 셋팅(bean등록)해야하는 내용들을 작성
+		주로 DB접속정보, 트랜잭션처리, 외부모듈연결 등등..
+		
+		bean등록이란 : 스프링이 관리할 객체를 등록하는 것.
+	 -->
+	 
+	 <!-- DB연결 설정을 위한 3단계 -->
+	 <!-- 1. DB연결 위한 도구 설정 -->
+	 <bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource" destroy-method="close">
+	 	<!-- 어떤 DB에 접속할건지 정보 작성 -->
+	 	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	 	<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+	 	<property name="username" value="SPRING" />
+	 	<property name="password" value="spring" />
+	 </bean>
+	 <!-- 
+	 	객체가 필요할 때마다 내부적으로 실행되는 코드
+	 	BasicDataSource dataSource = new BasicDataSource();
+	 	dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+	 	dataSource.setUrl("jdbc:oracle:this:@localhost:1521:xe");
+	 	dataSource.setUserName("SPRING");
+	 	dataSource.setPassword("SPRING");
+	 	이런식으로 필드에 값을 넣어줌.
+	 	Spring에서 connection객체를 사용하기 위한 객체임 Maven에서 가져온 api
+	 	
+	 	이런식으로 객체의 생성부터 생명주기 관리까지 spring이 하는 것 이것이 제어의 역전 즉, IoC이다.
+	  -->
+	<!-- 2. MybatisSpring에서 제공하는 SQL명령을 실행하기 위한 도구를 bean으로 등록해줘야함. -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+		<!-- MyBatis설정 파일의 위치를 설정(src/main/resources)하여 설정값들을 가져와야함. -->
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<!-- 어떤 DB에 연결할건지 연결을 위한 도구 참조 설정 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- 
+		객체가 필요할 때마다 내부적으로 이 코드가 실행됨
+		SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+		sqlSessionFactory.setConfigLocation("classpath:mybatis-config.xml");
+		sqlSessionFactory.setDataSource(dataSource);
+	 -->
+	<!-- 3단계. SQL구문 실행을 위한 템플릿을 제공하는 도구 등록 -->
+	<bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
+		<!-- SQL명령 실행을 위한 도구에 대한 참조 설정 -->
+		<constructor-arg ref="sqlSessionFactory" />
+	</bean>
+	<!-- 
+		객체가 필요할 때마다 내부적으로 이 코드가 실행됨
+		SqlSessionTemplate sqlSession = new SqlSessionTemplate(sqlSessionFactory);
+	 -->
+	 <!-- 
+	 	property : setter주입 필드에 값을 넣어주는 기능
+	 	constructor-arg : 생성자를 호출해서 ref에 값을 넣어주면 매개변수로 전달함.
+	  -->
+	  
+	  
+</beans>

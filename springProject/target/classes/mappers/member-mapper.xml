@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="memberMapper">
+	<!-- 로그인용 쿼리문 작성 -->
+	<select id="loginMember" parameterType="member" resultType="member">
+		SELECT 
+			   USER_ID userId,
+			   USER_PWD userPwd,
+			   USER_NAME userName,
+			   EMAIL email,
+			   GENDER gender,
+			   AGE age,
+			   PHONE phone,
+			   ADDRESS address,
+			   ENROLL_DATE enroll_date,
+			   MODIFY_DATE modify_date,
+			   STATUS status
+		  FROM 
+		       MEMBER 
+		 WHERE 
+		       USER_ID = #{userId} 
+		   AND 
+		       STATUS = 'Y'
+	</select>
+	<!-- parameterType == 등록되어있음 resultType은 돌려줄 값(담을곳) -->
+	<insert id="insertMember" parameterType="member">
+		INSERT INTO MEMBER(
+		                   USER_ID,
+		                   USER_PWD,
+		                   USER_NAME,
+		                   EMAIL,
+		                   GENDER,
+		                   AGE,
+		                   PHONE,
+		                   ADDRESS
+		                   ) VALUES (
+		                             #{userId},
+		                             #{userPwd},
+		                             #{userName},
+		                             #{email},
+		                             #{gender},
+		                             #{age},
+		                             #{phone},
+		                             #{address}
+		                             )
+	</insert>
+	
+	
+	
+	
+	
+	
+</mapper>

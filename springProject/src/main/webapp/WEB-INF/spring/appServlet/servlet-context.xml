@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<!-- @Controller와 같이 애노테이션을 활성화해주는 요소 -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<!-- 내부적으로 실행되는 코드 -->
+		<!-- new InternalResourceViewResolver().setPrefix("/WEB-INF/views/") -->
+		<!-- prefix : 접두어 -->
+		<beans:property name="suffix" value=".jsp" />
+		<!-- new InternalResourceViewResolver().setSuffix(".jsp") -->
+		<!-- 필드값에 자동으로 setter메소드 호출하며 필드값으로 .jsp를 넣어줌 -->
+		<!-- return main -->
+		<!-- /WEB-INF/views/    main   .jsp -->
+		<!-- suffix : 접미어 -->
+		<!-- 
+			주소 자동완성 도구 등록
+			- ViewResolver라는 도구를 등록(Spring등록)
+			class="패키지경로를 포함한 viewResolver클래스의 풀 클래스명"
+			prefix : 접두어 / suffic : 접미어
+		 -->
+		
+	</beans:bean>
+	
+	<!-- 
+		base-package에서 설정된 패키지와 그 이하에 있는 패키지를 감시하여  
+		등록 가능한 도구(@Component)를 모두 찾아서 자동으로 등록하는 설정
+	-->
+	<context:component-scan base-package="com.kh.spring" />
+	
+	<!-- 
+		HandlerMapping을 위해서 어떤 url로 어떤 Controller를 구동시킬 것인지 알아내야했었음.
+		1. 요청을 할 때마다 실행될 Controller클래스들을 bean으로 등록
+		<beans:bean class="com.kh.spring.member.controller.LoginController" id="loginController" />
+		<beans:bean class="com.kh.spring.member.controller.LogOutController" id="logoutController" />
+		
+		2. 어떤 요청이 들어왔을 때 어떤 Controller를 구동시킬건지 매핑시키는 HandlerMapping관련 클래스를 빈으로 등록
+		<beans:bean class="org.springframework.web.servlet.SimpleUrlHandlerMapping">
+			<bean.property name="mapping">
+				<beans:props>
+					<beans:prop key="login.me">loginController</beans:prop>
+					<beans:prop key="logout.me">logoutController</heans:prop>
+				</beans:props>
+			</bean.property>
+		</beans:bean>
+	 -->
+	 
+	 <!-- 
+	 	위 빈등록 방식은 xml방식임
+	 	=> 장점 : xml문서 내에서 한눈에 볼 수 있어서 관리의 편의성이 높음.
+	 	=> 단점 : bean개수가 많아지면 오히려 관리하기 어려움(controller의 개수가 늘어나면 관리가 어려워짐)
+	 	
+	 	애노테이션 방식
+	 	=> component-scan에서 지정한 감시할 패키지명의 하위의 모든 클래스들을 스캔해서
+	 	@Controller와 같이 MVC애노테이션이 붙은 클래스들을 자동으로 bean등록 해주는 방식
+	 	
+	 	내가 직접 만든 클래스가 아닐 경우 컴파일이 끝난 .class파일로 배포되기 떄문에
+	 	수정이 불가능하므로 코드상으로 애노테이션을 붙일수가 없다.
+	 	이 경우에는 xml파일로 설정해서 등록을 해줘야함.
+	 	( 한마디로 불러오는 라이브러리 같은 경우에는 .class형식이라 수정이 불가능 애노테이션 기입 불가! )
+	 	
+	 	=> component-scan에서 지정한 감시할 패키지명의 하위의 모든 클래스들을 스캔해서
+	 	@Controller와 같이 MVC애노테이션이 붙은 클래스들을 자동으로 bean등록 해주느 방식
+	  -->
+	
+</beans:beans>
